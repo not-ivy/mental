@@ -1,3 +1,4 @@
+import { ThreadAutoArchiveDuration } from 'discord.js';
 import fs from 'node:fs';
 
 class Mental {
@@ -30,6 +31,14 @@ class Mental {
   add(data: { os: string; author: string; timestamp: number; url: string }) {
     this.db.push(data);
     this.save();
+  }
+
+  getMostMentionedOS() {
+    return this.db.reduce((acc, curr) => {
+      if (acc[curr.os] === undefined) acc[curr.os] = 1;
+      else acc[curr.os] += 1;
+      return acc;
+    }, {} as Record<string, number>);
   }
 }
 

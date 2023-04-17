@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js';
 import Koa from 'koa';
 import Router from '@koa/router';
 import cors from '@koa/cors';
@@ -51,6 +51,40 @@ client.on(Events.MessageCreate, (message) => {
       message.react('✏️');
     },
   );
+});
+
+client.on(Events.MessageCreate, (message) => {
+  if (message.author.bot || !message.content.startsWith('~')) return;
+  const [command, ...args] = message.content.slice(1).split(' ');
+  switch (command) {
+    case 'stats':
+      // most mentioned os
+      message.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('Mental Illinois')
+            .setDescription(
+              `The currently most mentioned OS is ${
+                Object.entries(mental.getMostMentionedOS())
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([os]) => os)[0]
+              }`,
+            )
+            .setTimestamp(new Date())
+            .setFields(
+              Object.entries(mental.getMostMentionedOS()).map(
+                ([os, count]) => ({
+                  name: os,
+                  value: count.toString(),
+                }),
+              ),
+            ),
+        ],
+      });
+      break;
+    default:
+      break;
+  }
 });
 
 client.once(Events.ClientReady, () => {
